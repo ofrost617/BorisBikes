@@ -13,6 +13,17 @@ describe DockingStation do
     expect(bike).to respond_to(:working?)
   end
   
+  it "recognises dock bike method" do
+    docking_station = DockingStation.new
+    expect(docking_station).to respond_to(:dock_bike)
+  end
+  
+  it "Station has bike docked in it" do
+    docking_station = DockingStation.new
+    expect(docking_station).to respond_to(:bike_been_docked?)
+  end
+  
+
 end
 
 
