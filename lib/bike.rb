@@ -1,4 +1,4 @@
 class Bike
-def working?
-end
+    def working?
+    end
 end
