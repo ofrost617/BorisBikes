@@ -23,7 +23,7 @@ class DockingStation
   def dock_bike(bike, broken = false)
     raise "Docking station full" if full?
     bike.report_broken if broken == true
-      @bikes << bike
+      @bikes << bike if bike.class == Bike
   end
 
   def bike_been_docked?

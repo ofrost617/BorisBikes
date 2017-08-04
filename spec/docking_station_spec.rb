@@ -3,13 +3,14 @@ require_relative '../lib/bike'
 
 describe DockingStation do
 
+  let(:bike) {double :bike}
   it "Recognises release_bike" do
     docking_station = DockingStation.new
     expect(docking_station).to respond_to(:release_bike)
   end
 
   it "Bike is working" do
-    bike = Bike.new
+    allow(bike).to receive(:working?)
     expect(bike).to respond_to(:working?)
   end
   
@@ -32,8 +33,9 @@ describe DockingStation do
   describe "#dock_bike" do
     it "No space to dock bike" do
       station = DockingStation.new
-      subject.capacity.times {station.dock_bike(Bike.new)}
-      expect {station.dock_bike(Bike.new)}.to raise_error "Docking station full"
+      allow(bike).to receive(:class).and_return(Bike)
+      subject.capacity.times {station.dock_bike(bike)}
+      expect {station.dock_bike(bike)}.to raise_error "Docking station full"
     end   
   end
 
@@ -46,22 +48,38 @@ describe DockingStation do
   end
   
   it "can report a bike as broken" do
-    bike = Bike.new
+    allow(bike).to receive(:report_broken)
+    allow(bike).to receive(:working?).and_return(false)
     subject.dock_bike(bike, broken = true)
     expect(bike.working?).to eq(false)
   end
 
   it "docking station wont release broken bike" do
-    subject.dock_bike(Bike.new, broken = true)
+    allow(bike).to receive(:report_broken)
+    allow(bike).to receive(:working?).and_return(false)
+    subject.dock_bike(bike, broken = true)
     expect {subject.release_bike}.to raise_error "No bikes available"
   end
   
-  it "accepts broken or working bike" do
-    subject.dock_bike(Bike.new, broken = true)
-    subject.dock_bike(Bike.new)
-    expect((subject.bikes[0].working? == false) && (subject.bikes[1].working? == true)).to eq(true)
+  it "accepts broken bikes" do
+    allow(bike).to receive_messages(
+      :report_broken => nil,
+      :class => Bike,
+      :working? => false)
+    subject.dock_bike(bike, broken = true)
+    expect(subject.bikes[0].working? == false).to eq(true) # && (subject.bikes[1].working? == true)).to eq(true)
+  end
+
+it "accepts working bikes too" do
+    allow(bike).to receive_messages(
+      :report_broken => nil,
+      :class => Bike,
+      :working? => true)
+    subject.dock_bike(bike, broken = false)
+    expect(subject.bikes[0].working? == true).to eq(true) # && (subject.bikes[1].working? == true)).to eq(true)
   end
 end
+
   
 
 # expect(obj.respon_to? :my_method).to eq true is another way of writing a test.
