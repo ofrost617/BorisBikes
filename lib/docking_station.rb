@@ -1,4 +1,5 @@
 require_relative './bike'
+require_relative './van'
 
 class DockingStation
   DEFAULT_CAPACITY = 20
@@ -19,6 +20,15 @@ class DockingStation
       end
       raise "No bikes available"
   end
+
+  def release_broken_bikes
+      van = []
+      broken_bikes = (@bikes.select {|bike| bike.working? == false})
+      @bikes = @bikes - broken_bikes
+      return (broken_bikes) unless broken_bikes.empty?
+      raise "No broken bikes available"
+  end
+
 
   def dock_bike(bike, broken = false)
     raise "Docking station full" if full?

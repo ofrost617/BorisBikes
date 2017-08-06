@@ -4,6 +4,7 @@ require_relative '../lib/bike'
 describe DockingStation do
 
   let(:bike) {double :bike}
+  let(:broken_bike) {double :broken_bike}
   it "Recognises release_bike" do
     docking_station = DockingStation.new
     expect(docking_station).to respond_to(:release_bike)
@@ -61,28 +62,22 @@ describe DockingStation do
     expect {subject.release_bike}.to raise_error "No bikes available"
   end
   
-  it "accepts broken bikes" do
-    allow(bike).to receive_messages(
-      :report_broken => nil,
-      :class => Bike,
-      :working? => false)
-    subject.dock_bike(bike, broken = true)
-    expect(subject.bikes[0].working? == false).to eq(true) # && (subject.bikes[1].working? == true)).to eq(true)
-  end
-
-it "accepts working bikes too" do
+  it "accepts both working and broken bikes" do
     allow(bike).to receive_messages(
       :report_broken => nil,
       :class => Bike,
       :working? => true)
-    subject.dock_bike(bike, broken = false)
-    expect(subject.bikes[0].working? == true).to eq(true) # && (subject.bikes[1].working? == true)).to eq(true)
+    allow(broken_bike).to receive_messages(
+      :report_broken => nil,
+      :class => Bike,
+      :working? => false)
+    subject.dock_bike(bike)
+    subject.dock_bike(broken_bike, broken = true)
+    expect((subject.bikes[0].working? == true) && (subject.bikes[1].working? == false)).to eq(true)
   end
 end
 
   
-
-# expect(obj.respon_to? :my_method).to eq true is another way of writing a test.
 
 
 
